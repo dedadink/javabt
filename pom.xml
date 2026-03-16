@@ -1,0 +1,55 @@
+diff --git a/pom.xml b/pom.xml
+new file mode 100644
+index 0000000000000000000000000000000000000000..7c90b332323fcef296f320deaaf2a4478c56111f
+--- /dev/null
++++ b/pom.xml
+@@ -0,0 +1,49 @@
++<project xmlns="http://maven.apache.org/POM/4.0.0"
++         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
++         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
++    <modelVersion>4.0.0</modelVersion>
++
++    <groupId>com.bot</groupId>
++    <artifactId>javabt</artifactId>
++    <version>0.1.0-SNAPSHOT</version>
++    <name>javabt</name>
++
++    <properties>
++        <maven.compiler.release>21</maven.compiler.release>
++        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
++        <jforex.api.version>2.13.98</jforex.api.version>
++    </properties>
++
++    <repositories>
++        <repository>
++            <id>dukascopy-public</id>
++            <name>Dukascopy Public Repository</name>
++            <url>https://www.dukascopy.com/client/jforexlib/publicrepo/</url>
++        </repository>
++    </repositories>
++
++    <dependencies>
++        <dependency>
++            <groupId>com.dukascopy.api</groupId>
++            <artifactId>JForex-API</artifactId>
++            <version>${jforex.api.version}</version>
++        </dependency>
++    </dependencies>
++
++    <build>
++        <sourceDirectory>${project.basedir}</sourceDirectory>
++        <plugins>
++            <plugin>
++                <groupId>org.apache.maven.plugins</groupId>
++                <artifactId>maven-compiler-plugin</artifactId>
++                <version>3.13.0</version>
++                <configuration>
++                    <release>${maven.compiler.release}</release>
++                    <includes>
++                        <include>*.java</include>
++                    </includes>
++                </configuration>
++            </plugin>
++        </plugins>
++    </build>
++</project>
