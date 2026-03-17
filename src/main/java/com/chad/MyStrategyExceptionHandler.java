@@ -1,4 +1,4 @@
-package com.bot.fx;
+package com.chad;
 
 import com.dukascopy.api.system.IStrategyExceptionHandler;
 

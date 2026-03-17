@@ -1,4 +1,4 @@
-package com.bot.fx;
+package com.chad;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

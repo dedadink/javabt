@@ -1,4 +1,4 @@
-package com.bot.fx;
+package com.chad;
 
 import com.dukascopy.api.Instrument;
 import com.dukascopy.api.IStrategy;
@@ -7,7 +7,9 @@ import com.dukascopy.api.system.ClientFactory;
 import com.dukascopy.api.system.IClient;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 public class Main {
@@ -34,6 +36,10 @@ public class Main {
         }
 
         List<InstrumentSettings> baseSettingsList = initializeInstrumentSettings();
+        subscribeInstruments(client, baseSettingsList);
+
+        long maxStrategyRuntimeSeconds = parsePositiveLongEnv("MAX_STRATEGY_RUNTIME_SECONDS", 0);
+
         List<InstrumentSettings> settingsRuns = expandSettings(baseSettingsList);
         long totalIterations = settingsRuns.size();
         long startTime = System.currentTimeMillis();
@@ -46,8 +52,14 @@ public class Main {
                 IStrategy strategy = new FXbot(settings);
                 long strategyId = client.startStrategy(strategy);
 
+                long strategyStartTime = System.currentTimeMillis();
                 while (client.getStartedStrategies().containsKey(strategyId)) {
                     Thread.sleep(1000);
+                    if (maxStrategyRuntimeSeconds > 0 &&
+                            System.currentTimeMillis() - strategyStartTime > TimeUnit.SECONDS.toMillis(maxStrategyRuntimeSeconds)) {
+                        System.out.println("Max strategy runtime reached for strategyId=" + strategyId + ", stopping it.");
+                        client.stopStrategy(strategyId);
+                    }
                 }
 
                 long elapsedTime = System.currentTimeMillis() - startTime;
@@ -125,6 +137,28 @@ public class Main {
         }
 
         return expanded;
+    }
+
+
+    private static void subscribeInstruments(IClient client, List<InstrumentSettings> settingsList) {
+        Set<Instrument> instruments = new HashSet<>();
+        for (InstrumentSettings settings : settingsList) {
+            instruments.add(settings.getInstrument());
+        }
+        client.setSubscribedInstruments(instruments, true);
+    }
+
+    private static long parsePositiveLongEnv(String key, long defaultValue) {
+        String value = System.getenv(key);
+        if (value == null || value.trim().isEmpty()) {
+            return defaultValue;
+        }
+        try {
+            long parsed = Long.parseLong(value.trim());
+            return parsed > 0 ? parsed : defaultValue;
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
     }
 
     private static List<InstrumentSettings> initializeInstrumentSettings() {

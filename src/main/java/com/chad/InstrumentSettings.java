@@ -1,4 +1,4 @@
-package com.bot.fx;
+package com.chad;
 
 import com.dukascopy.api.Instrument;
 import com.dukascopy.api.Period;

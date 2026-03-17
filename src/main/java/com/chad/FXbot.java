@@ -1,4 +1,4 @@
-package com.bot.fx;
+package com.chad;
 
 import com.dukascopy.api.IAccount;
 import com.dukascopy.api.IBar;
@@ -84,6 +84,11 @@ public class FXbot implements IStrategy {
 
             latestTickPriceAsk = tick.getAsk();
             latestTickPriceBid = tick.getBid();
+
+            if (isInstrumentTradable && recalculateLevels) {
+                calculateLevels();
+                recalculateLevels = false;
+            }
         } catch (Exception e) {
             console.getErr().println("Error in onTick: " + e.getMessage());
         }
@@ -91,7 +96,7 @@ public class FXbot implements IStrategy {
 
     @Override
     public void onBar(Instrument instrument, Period period, IBar askBar, IBar bidBar) throws JFException {
-        if (!isRunning || !instrument.equals(settings.getInstrument())) {
+        if (!isRunning || !instrument.equals(settings.getInstrument()) || !period.equals(settings.getTradeExecutionPeriod())) {
             return;
         }
 
@@ -115,10 +120,6 @@ public class FXbot implements IStrategy {
                     console.getOut().println(
                             "Instrument " + settings.getInstrument() + " tradable: " + isInstrumentTradable);
 
-                    if (isInstrumentTradable && recalculateLevels) {
-                        calculateLevels();
-                        recalculateLevels = false;
-                    }
                 }
             }
         } catch (Exception e) {
@@ -127,6 +128,11 @@ public class FXbot implements IStrategy {
     }
 
     private void calculateLevels() {
+        if (latestTickPriceAsk <= 0 || latestTickPriceBid <= 0) {
+            console.getWarn().println("Skipping level calculation until valid tick prices are available.");
+            return;
+        }
+
         upperZone = latestTickPriceAsk + settings.getCurrentLevelSearchRange();
         lowerZone = latestTickPriceBid - settings.getCurrentLevelSearchRange();
         console.getOut().println("Levels calculated: Upper Zone = " + upperZone + ", Lower Zone = " + lowerZone);
