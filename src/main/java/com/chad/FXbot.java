@@ -1,228 +1,170 @@
 package com.chad;
 
-import com.dukascopy.api.IAccount;
-import com.dukascopy.api.IBar;
-import com.dukascopy.api.IConsole;
-import com.dukascopy.api.IContext;
-import com.dukascopy.api.IEngine;
-import com.dukascopy.api.IHistory;
-import com.dukascopy.api.IInstrumentStatusMessage;
-import com.dukascopy.api.IMessage;
-import com.dukascopy.api.IOrder;
-import com.dukascopy.api.IStrategy;
-import com.dukascopy.api.ITick;
 import com.dukascopy.api.Instrument;
-import com.dukascopy.api.JFException;
-import com.dukascopy.api.OfferSide;
 import com.dukascopy.api.Period;
 
-import java.time.Instant;
-import java.time.LocalTime;
-import java.time.ZoneOffset;
-import java.util.List;
-import java.util.stream.Collectors;
+public class InstrumentSettings {
+    private Instrument instrument;
+    private double pipValue;
+    private double[] riskPercentRange;
+    private double[] levelSearchRangeRange;
+    private double[] minLevelDistanceRange;
+    private double[] zoneRangeRange;
+    private int[] historyMonthsRange;
+    private double[] minPipsTPRange;
+    private double[] minPipsSLRange;
+    private double[] maxExposurePercentRange;
+    private double[] toleranceRange;
+    private int[] checkCounterRange;
+    private Period levelCalculationPeriod;
+    private Period tradeExecutionPeriod;
+    private long startTime;
+    private long endTime;
+    private double maxLossPercent;
+    private boolean waitForNextCandle;
+    private long postTradeWaitTime;
+    private double slPartialClosurePercentage;
+    private double tpPartialClosurePercentage;
+    private double currentLevelSearchRange;
 
-public class FXbot implements IStrategy {
-    private static final ZoneOffset TRADING_TIMEZONE = ZoneOffset.UTC;
+    public InstrumentSettings(
+            Instrument instrument, double pipValue, double[] riskPercentRange, double[] levelSearchRangeRange,
+            double[] minLevelDistanceRange, double[] zoneRangeRange, int[] historyMonthsRange, double[] minPipsTPRange,
+            double[] minPipsSLRange, double[] maxExposurePercentRange, double[] toleranceRange, int[] checkCounterRange,
+            Period levelCalculationPeriod, Period tradeExecutionPeriod, long startTime, long endTime, double maxLossPercent,
+            boolean waitForNextCandle, long postTradeWaitTime, double slPartialClosurePercentage,
+            double tpPartialClosurePercentage) {
+        this.instrument = instrument;
+        this.pipValue = pipValue;
+        this.riskPercentRange = riskPercentRange;
+        this.levelSearchRangeRange = levelSearchRangeRange;
+        this.minLevelDistanceRange = minLevelDistanceRange;
+        this.zoneRangeRange = zoneRangeRange;
+        this.historyMonthsRange = historyMonthsRange;
+        this.minPipsTPRange = minPipsTPRange;
+        this.minPipsSLRange = minPipsSLRange;
+        this.maxExposurePercentRange = maxExposurePercentRange;
+        this.toleranceRange = toleranceRange;
+        this.checkCounterRange = checkCounterRange;
+        this.levelCalculationPeriod = levelCalculationPeriod;
+        this.tradeExecutionPeriod = tradeExecutionPeriod;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.maxLossPercent = maxLossPercent;
+        this.waitForNextCandle = waitForNextCandle;
+        this.postTradeWaitTime = postTradeWaitTime;
+        this.slPartialClosurePercentage = slPartialClosurePercentage;
+        this.tpPartialClosurePercentage = tpPartialClosurePercentage;
+    }
 
-    private IConsole console;
-    private IEngine engine;
-    private IHistory history;
-    private IContext context;
-    private final InstrumentSettings settings;
+    public void setCurrentLevelSearchRange(double levelSearchRange) {
+        this.currentLevelSearchRange = levelSearchRange;
+    }
 
-    private double accountBalance;
-    private double totalProfit = 0.0;
-    private double maxDrawdown = 0.0;
-    private double peakEquity = 0.0;
+    public double getSlPartialClosurePercentage() {
+        return slPartialClosurePercentage;
+    }
 
-    private final double slPartialClosurePercentage;
-    private final double tpPartialClosurePercentage;
+    public double getTpPartialClosurePercentage() {
+        return tpPartialClosurePercentage;
+    }
 
-    private double latestTickPriceAsk;
-    private double latestTickPriceBid;
-    private double upperZone;
-    private double lowerZone;
-    private boolean recalculateLevels = true;
-    private boolean isRunning = true;
-    private boolean isInstrumentTradable = false;
+    public double getPipValue() {
+        return pipValue;
+    }
 
-    public FXbot(InstrumentSettings settings) {
-        this.settings = settings;
-        this.slPartialClosurePercentage = settings.getSlPartialClosurePercentage();
-        this.tpPartialClosurePercentage = settings.getTpPartialClosurePercentage();
+    public Instrument getInstrument() {
+        return instrument;
+    }
+
+    public double[] getRiskPercentRange() {
+        return riskPercentRange;
+    }
+
+    public double[] getLevelSearchRangeRange() {
+        return levelSearchRangeRange;
+    }
+
+    public double[] getMinLevelDistanceRange() {
+        return minLevelDistanceRange;
+    }
+
+    public double[] getZoneRangeRange() {
+        return zoneRangeRange;
+    }
+
+    public int[] getHistoryMonthsRange() {
+        return historyMonthsRange;
+    }
+
+    public double[] getMinPipsTPRange() {
+        return minPipsTPRange;
+    }
+
+    public double[] getMinPipsSLRange() {
+        return minPipsSLRange;
+    }
+
+    public double[] getMaxExposurePercentRange() {
+        return maxExposurePercentRange;
+    }
+
+    public double[] getToleranceRange() {
+        return toleranceRange;
+    }
+
+    public double getCurrentLevelSearchRange() {
+        return currentLevelSearchRange;
+    }
+
+    public int[] getCheckCounterRange() {
+        return checkCounterRange;
+    }
+
+    public Period getLevelCalculationPeriod() {
+        return levelCalculationPeriod;
+    }
+
+    public Period getTradeExecutionPeriod() {
+        return tradeExecutionPeriod;
+    }
+
+    public long getStartTime() {
+        return startTime;
+    }
+
+    public long getEndTime() {
+        return endTime;
+    }
+
+    public double getMaxLossPercent() {
+        return maxLossPercent;
+    }
+
+    public boolean isWaitForNextCandle() {
+        return waitForNextCandle;
+    }
+
+    public long getPostTradeWaitTime() {
+        return postTradeWaitTime;
     }
 
     @Override
-    public void onStart(IContext context) throws JFException {
-        this.console = context.getConsole();
-        this.context = context;
-        this.engine = context.getEngine();
-        this.history = context.getHistory();
-
-        if (settings.getCurrentLevelSearchRange() <= 0 && settings.getLevelSearchRangeRange().length > 0) {
-            settings.setCurrentLevelSearchRange(settings.getLevelSearchRangeRange()[0]);
-        }
-
-        if (settings.getCurrentLevelSearchRange() <= 0) {
-            throw new IllegalStateException("Current level search range must be greater than zero.");
-        }
-
-        console.getOut().println("Strategy started with settings: " + settings.toString());
-    }
-
-    @Override
-    public void onTick(Instrument instrument, ITick tick) throws JFException {
-        try {
-            if (!isRunning || !instrument.equals(settings.getInstrument()) || !isInstrumentTradable) {
-                return;
-            }
-
-            if (!isWithinTradingWindow(tick.getTime(), settings.getStartTime(), settings.getEndTime())) {
-                return;
-            }
-
-            latestTickPriceAsk = tick.getAsk();
-            latestTickPriceBid = tick.getBid();
-
-            if (isInstrumentTradable && recalculateLevels) {
-                calculateLevels();
-                recalculateLevels = false;
-            }
-        } catch (Exception e) {
-            console.getErr().println("Error in onTick: " + e.getMessage());
-        }
-    }
-
-    @Override
-    public void onBar(Instrument instrument, Period period, IBar askBar, IBar bidBar) throws JFException {
-        if (!isRunning || !instrument.equals(settings.getInstrument()) || !period.equals(settings.getTradeExecutionPeriod())) {
-            return;
-        }
-
-        List<IOrder> filledOrders = engine.getOrders(instrument).stream()
-                .filter(o -> o.getState() == IOrder.State.FILLED)
-                .collect(Collectors.toList());
-
-        for (IOrder order : filledOrders) {
-            manageTrade(order, bidBar.getClose());
-        }
-    }
-
-    @Override
-    public void onMessage(IMessage message) throws JFException {
-        try {
-            if (message.getType() == IMessage.Type.INSTRUMENT_STATUS) {
-                IInstrumentStatusMessage instrumentStatusMessage = (IInstrumentStatusMessage) message;
-                Instrument messageInstrument = instrumentStatusMessage.getInstrument();
-                if (messageInstrument != null && messageInstrument.equals(settings.getInstrument())) {
-                    isInstrumentTradable = instrumentStatusMessage.isTradable();
-                    console.getOut().println(
-                            "Instrument " + settings.getInstrument() + " tradable: " + isInstrumentTradable);
-
-                }
-            }
-        } catch (Exception e) {
-            console.getErr().println("Error in onMessage: " + e.getMessage());
-        }
-    }
-
-    private void calculateLevels() {
-        if (latestTickPriceAsk <= 0 || latestTickPriceBid <= 0) {
-            console.getWarn().println("Skipping level calculation until valid tick prices are available.");
-            return;
-        }
-
-        upperZone = latestTickPriceAsk + settings.getCurrentLevelSearchRange();
-        lowerZone = latestTickPriceBid - settings.getCurrentLevelSearchRange();
-        console.getOut().println("Levels calculated: Upper Zone = " + upperZone + ", Lower Zone = " + lowerZone);
-    }
-
-    @Override
-    public void onAccount(IAccount account) throws JFException {
-        this.accountBalance = account.getBalance();
-        try {
-            double currentEquity = account.getEquity();
-            this.accountBalance = account.getBalance();
-            totalProfit = currentEquity - accountBalance;
-            peakEquity = Math.max(peakEquity, currentEquity);
-            maxDrawdown = Math.max(maxDrawdown, peakEquity - currentEquity);
-
-            if (totalProfit < -settings.getMaxLossPercent() * accountBalance) {
-                isRunning = false;
-                console.getWarn().println("Max loss reached, closing orders and stopping strategy logic.");
-                closeOpenOrders();
-            }
-        } catch (Exception e) {
-            console.getErr().println("Error in onAccount: " + e.getMessage());
-        }
-    }
-
-    @Override
-    public void onStop() throws JFException {
-        console.getOut().println("Strategy stopped. Profit=" + totalProfit + ", maxDrawdown=" + maxDrawdown
-                + ", upperZone=" + upperZone + ", lowerZone=" + lowerZone);
-    }
-
-    private void manageTrade(IOrder order, double currentPrice) throws JFException {
-        double entryPrice = order.getOpenPrice();
-        double tpPrice = order.getTakeProfitPrice();
-        double slPrice = order.getStopLossPrice();
-
-        double slClosureLevel = slPrice + (entryPrice - slPrice) * slPartialClosurePercentage;
-        double tpClosureLevel = tpPrice - (tpPrice - entryPrice) * tpPartialClosurePercentage;
-
-        if (order.isLong()) {
-            if (currentPrice <= slClosureLevel) {
-                closePartialOrder(order, slPartialClosurePercentage);
-            } else if (currentPrice >= tpClosureLevel) {
-                closePartialOrder(order, tpPartialClosurePercentage);
-            }
-        } else {
-            if (currentPrice >= slClosureLevel) {
-                closePartialOrder(order, slPartialClosurePercentage);
-            } else if (currentPrice <= tpClosureLevel) {
-                closePartialOrder(order, tpPartialClosurePercentage);
-            }
-        }
-    }
-
-    public List<IBar> getBarsForInstrument(Instrument instrument, Period period, int numberOfBars) throws JFException {
-        long endTime = context.getTime();
-        long startTime = history.getTimeOfLastTick(instrument) - period.getInterval() * numberOfBars;
-        return history.getBars(instrument, period, OfferSide.BID, startTime, endTime);
-    }
-
-    private void closePartialOrder(IOrder order, double percentage) throws JFException {
-        double amountToClose = order.getAmount() * percentage;
-        if (amountToClose > 0 && amountToClose < order.getAmount()) {
-            order.close(amountToClose);
-            console.getOut().println("Closed " + (percentage * 100) + "% of the trade.");
-        } else if (amountToClose >= order.getAmount()) {
-            order.close();
-            console.getOut().println("Closed the entire trade.");
-        }
-    }
-
-    private void closeOpenOrders() throws JFException {
-        for (IOrder order : engine.getOrders(settings.getInstrument())) {
-            if (order.getState() != IOrder.State.CLOSED && order.getState() != IOrder.State.CANCELED) {
-                order.close();
-            }
-        }
-    }
-
-    private boolean isWithinTradingWindow(long epochMillis, long startTimeMillisOfDay, long endTimeMillisOfDay) {
-        long millisOfDay = toMillisOfDay(epochMillis);
-        if (startTimeMillisOfDay <= endTimeMillisOfDay) {
-            return millisOfDay >= startTimeMillisOfDay && millisOfDay <= endTimeMillisOfDay;
-        }
-
-        return millisOfDay >= startTimeMillisOfDay || millisOfDay <= endTimeMillisOfDay;
-    }
-
-    private long toMillisOfDay(long epochMillis) {
-        LocalTime time = Instant.ofEpochMilli(epochMillis).atZone(TRADING_TIMEZONE).toLocalTime();
-        return time.toNanoOfDay() / 1_000_000;
+    public String toString() {
+        return "InstrumentSettings{" +
+                "instrument=" + instrument +
+                ", pipValue=" + pipValue +
+                ", riskPercent=" + java.util.Arrays.toString(riskPercentRange) +
+                ", levelSearchRange=" + java.util.Arrays.toString(levelSearchRangeRange) +
+                ", minLevelDistance=" + java.util.Arrays.toString(minLevelDistanceRange) +
+                ", zoneRange=" + java.util.Arrays.toString(zoneRangeRange) +
+                ", historyMonths=" + java.util.Arrays.toString(historyMonthsRange) +
+                ", minPipsTP=" + java.util.Arrays.toString(minPipsTPRange) +
+                ", minPipsSL=" + java.util.Arrays.toString(minPipsSLRange) +
+                ", maxExposurePercent=" + java.util.Arrays.toString(maxExposurePercentRange) +
+                ", tolerance=" + java.util.Arrays.toString(toleranceRange) +
+                ", checkCounter=" + java.util.Arrays.toString(checkCounterRange) +
+                ", currentLevelSearchRange=" + currentLevelSearchRange +
+                '}';
     }
 }
